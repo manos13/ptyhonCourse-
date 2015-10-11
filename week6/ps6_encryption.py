@@ -132,20 +132,14 @@ def applyShift(text, shift):
     """
     ### TODO.
     ### HINT: This is a wrapper function.
-    print shift
-    assert(shift < 26) ,"is not between 0 <= shift <26 got %d " % shift
-    assert (shift > 0) ,  "is not between 0 <= shift <26 got %r " % shift
+    
+    assert(shift >0 or shift < 26) ,"is not between 0 <= shift <26 got %d " % shift
     return applyCoder(text,buildCoder(shift))# Remove this comment when you code the function
 
 #
 # Problem 2: Decryption
 #
-def removePun(text):
-    alphabet = alphabet = string.ascii_uppercase + string.ascii_lowercase + ' '
-    
-    return "".join([let for let in text for lea in alphabet if let == lea])
-    
-#import pdb; pdb.set_trace()
+import pdb; pdb.set_trace()
 def findBestShift(wordList, text):
     """
     Finds a shift key that can decrypt the encoded text.
@@ -154,6 +148,23 @@ def findBestShift(wordList, text):
     returns: 0 <= int < 26
     """
     ### TODO
+    d = {n: 0 for n in range(25)}    
+    shift = 0
+    while True:
+        newText = applyShift(text, shift)
+
+        textList = newText.split(" ")
+        count = 0 
+        for word in textList:
+            if isWord(wordList,word):
+                count +=1 
+        d[shift] = count
+        if shift == 25:
+            break
+        shift += 1
+    return max(d,key=d.get)
+
+    """
     shift = 1
     while True: 
         try:
@@ -176,7 +187,7 @@ def findBestShift(wordList, text):
             return 0 
 
         return 26 -shift
-
+    """
 def decryptStory():
     """
     Using the methods you created in this problem set,
@@ -187,7 +198,9 @@ def decryptStory():
     returns: string - story in plain text
     """
     ### TODO.
-    return "Not yet implemented." # Remove this comment when you code the function
+    
+
+    return applyShift(getStoryString(),findBestShift(wordList, getStoryString()))# Remove this comment when you code the function
 
 #
 # Build data structures used for entire session and run encryption
@@ -196,11 +209,11 @@ def decryptStory():
 if __name__ == '__main__':
     # To test findBestShift:
     wordList = loadWords()
-    s = applyShift('Hello, world!', 6)
-    print s
-    bestShift = findBestShift(wordList, s)
-    print bestShift
-    print applyShift(s,bestShift)
+    #s = applyShift('Hello, world!', 0)
+    #print s
+    #bestShift = findBestShift(wordList, s)
+    #print bestShift
+    #print applyShift(s,bestShift)
     #assert applyShift(s, bestShift) == 'Hello, world!'
     # To test decryptStory, comment the above four lines and uncomment this line:
-    #    decryptStory()
+    print decryptStory()
