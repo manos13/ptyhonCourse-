@@ -99,9 +99,11 @@ def buildCoder(shift):
     shift: 0 <= int < 26
     returns: dict
     """
-    ### TODO.
-    return "Not yet implemented." # Remove this comment when you code the function
+    alphabetCipher = string.ascii_uppercase[shift:] + string.ascii_uppercase[:shift] + string.ascii_lowercase[shift:] + string.ascii_lowercase[:shift]  
+    alphabet = string.ascii_uppercase + string.ascii_lowercase 
 
+    return {alphabet[index] : alphabetCipher[index]  for index in range(len(alphabet))}
+    
 def applyCoder(text, coder):
     """
     Applies the coder to the text. Returns the encoded text.
@@ -110,9 +112,13 @@ def applyCoder(text, coder):
     coder: dict with mappings of characters to shifted characters
     returns: text after mapping coder chars to original text
     """
-    ### TODO.
-    return "Not yet implemented." # Remove this comment when you code the function
-
+    copyText = list(text)
+    for index in range(len(text)):
+        for k,v in coder.iteritems():
+            if text[index] == k:
+                copyText[index] = v
+                
+    return "".join(copyText)
 def applyShift(text, shift):
     """
     Given a text, returns a new text Caesar shifted by the given shift
@@ -126,11 +132,20 @@ def applyShift(text, shift):
     """
     ### TODO.
     ### HINT: This is a wrapper function.
-    return "Not yet implemented." # Remove this comment when you code the function
+    print shift
+    assert(shift < 26) ,"is not between 0 <= shift <26 got %d " % shift
+    assert (shift > 0) ,  "is not between 0 <= shift <26 got %r " % shift
+    return applyCoder(text,buildCoder(shift))# Remove this comment when you code the function
 
 #
 # Problem 2: Decryption
 #
+def removePun(text):
+    alphabet = alphabet = string.ascii_uppercase + string.ascii_lowercase + ' '
+    
+    return "".join([let for let in text for lea in alphabet if let == lea])
+    
+#import pdb; pdb.set_trace()
 def findBestShift(wordList, text):
     """
     Finds a shift key that can decrypt the encoded text.
@@ -139,7 +154,28 @@ def findBestShift(wordList, text):
     returns: 0 <= int < 26
     """
     ### TODO
-    return "Not yet implemented." # Remove this comment when you code the function
+    shift = 1
+    while True: 
+        try:
+            newText = applyShift(text,26-shift)
+
+            #newText = removePun(newText)
+            textList = newText.split(" ")
+            count = 0 
+            #testCount = len(textList)
+            for word in textList:
+                #testWord = word in wordList
+                if isWord(wordList,word):
+                    count += 1
+            if count == len(textList):
+                break
+            shift += 1   
+        except AssertionError:
+            return 0       
+        if 26-shift == 25:
+            return 0 
+
+        return 26 -shift
 
 def decryptStory():
     """
@@ -160,8 +196,11 @@ def decryptStory():
 if __name__ == '__main__':
     # To test findBestShift:
     wordList = loadWords()
-    s = applyShift('Hello, world!', 8)
+    s = applyShift('Hello, world!', 6)
+    print s
     bestShift = findBestShift(wordList, s)
-    assert applyShift(s, bestShift) == 'Hello, world!'
+    print bestShift
+    print applyShift(s,bestShift)
+    #assert applyShift(s, bestShift) == 'Hello, world!'
     # To test decryptStory, comment the above four lines and uncomment this line:
     #    decryptStory()
